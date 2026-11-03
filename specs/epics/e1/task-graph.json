@@ -1,0 +1,117 @@
+{
+  "acceptance_tests": [
+    "tests/test_epic_subsequence.py"
+  ],
+  "contracts": [
+    {
+      "declaration": "def is_subsequence(needle, haystack):\n    \"\"\"Return ``True`` if the elements of *needle* appear in *haystack* in the\n    same relative order, not necessarily contiguously.\n\n    An empty *needle* is a subsequence of anything. Both arguments are\n    iterables consumed at most once.\n    \"\"\"\n    raise NotImplementedError\n\n\ndef subsequence_indexes(needle, haystack):\n    \"\"\"Return a list of the indexes in *haystack* of the leftmost (greedy)\n    match of *needle* as a subsequence, or ``None`` if there is none.\n    \"\"\"\n    raise NotImplementedError\n\n\ndef longest_common_suffix(iterables):\n    \"\"\"Yield elements of the longest common suffix among given *iterables*,\n    in order. The inputs are materialised.\n    \"\"\"\n    raise NotImplementedError\n",
+      "name": "subsequence-helpers-api",
+      "path": "more_itertools/more.py",
+      "stub_task": "stub-subsequence-api"
+    },
+    {
+      "declaration": "def is_subsequence(needle: Iterable[object], haystack: Iterable[object]) -> bool: ...\ndef subsequence_indexes(needle: Iterable[object], haystack: Iterable[object]) -> list[int] | None: ...\ndef longest_common_suffix(iterables: Iterable[Iterable[_T]]) -> Iterator[_T]: ...\n",
+      "name": "subsequence-helpers-typing",
+      "path": "more_itertools/more.pyi",
+      "stub_task": "stub-subsequence-api"
+    }
+  ],
+  "epic_id": "e1",
+  "spec": "# Subsequence helpers\n\nThis epic adds three pure, additive functions to `more_itertools.more`. They are exported from `more_itertools`, listed in `more.__all__`, declared in `more.pyi` with `typing` generics in the same style as their neighbours, and documented with `.. autofunction::` entries in `docs/api.rst`. No existing function changes. No dependency is added. `recipes.py` is untouched.\n\n## is_subsequence(needle, haystack) -> bool\n\nReturns True when every element of `needle` appears in `haystack` in the same relative order. The matched elements need not be contiguous. Equality is `==`.\n\n- An empty needle is a subsequence of any haystack, including an empty one.\n- A non-empty needle is never a subsequence of an empty haystack.\n- Each argument is an arbitrary iterable and is iterated at most once, so one-shot iterators work.\n- The function stops consuming `haystack` as soon as the whole needle has been matched.\n- It never builds a list of indexes.\n- For all inputs its result equals whether `subsequence_indexes` on the same inputs returns something other than None.\n\nExamples: the letters a, c, e occur in that order within 'abcde', so the result is True. The order a, e, c does not occur, so the result is False.\n\n## subsequence_indexes(needle, haystack) -> list[int] | None\n\nReturns the zero-based positions in `haystack` of the leftmost, greedy match of `needle` as a subsequence. Each needle element is matched to the earliest haystack element that is equal to it and comes after the previous match.\n\n- The result is a strictly increasing list whose length equals the length of the needle.\n- The result is None when no match exists.\n- An empty needle gives an empty list.\n- Both arguments are iterables consumed once.\n\nExamples:\n- Matching needle 'ace' within 'abcde' yields positions 0, 2 and 4.\n- A repeated needle element is matched to successive earliest occurrences: two 'a's within 'aaa' give positions 0 and 1.\n\n## longest_common_suffix(iterables) -> Iterator[T]\n\nThe mirror of `longest_common_prefix`. It returns an iterator over the longest run of trailing elements shared by every iterable in `iterables`, in the original front-to-back order.\n\n- Each input may be an iterator. Inputs are materialised, because the function must see their ends.\n- `iterables` itself may be any iterable, including a generator.\n- With no common suffix, the result is empty.\n- With exactly one iterable, the result yields all of its elements.\n- With no iterables at all, the result is empty.\n- On sequences, the result equals reversing the output of `longest_common_prefix` applied to the reversed inputs.\n\nExample: the inputs 'abcd', 'xbcd' and 'bcd' share the trailing elements b, c, d.\n\n## Out of scope\n\n- Changes to existing functions.\n- New dependencies.\n- Changes to `recipes.py`.\n- A CLI or any I/O.",
+  "tasks": [
+    {
+      "allowed_paths": [
+        "more_itertools/more.py",
+        "more_itertools/more.pyi",
+        "docs/api.rst",
+        "tests/test_more.py"
+      ],
+      "contracts": [
+        "subsequence-helpers-api",
+        "subsequence-helpers-typing"
+      ],
+      "depends_on": [],
+      "id": "stub-subsequence-api",
+      "kind": "feature",
+      "oracle": {
+        "acceptance": "Each of the three names is importable from `more_itertools` and listed in `more_itertools.more.__all__`. Calling any of them raises NotImplementedError. `more.pyi` declares all three. `docs/api.rst` contains an autofunction entry for each. The existing test suite still passes."
+      },
+      "stub": true,
+      "text": "Add `is_subsequence`, `subsequence_indexes` and `longest_common_suffix` to `more_itertools/more.py`. Each gets its full docstring and a body that raises `NotImplementedError`. Add the three names to `__all__` in alphabetical position.\n\nAdd matching declarations to `more_itertools/more.pyi`, using the typing generics the neighbouring declarations use.\n\nAdd three `.. autofunction::` lines to `docs/api.rst`:\n- `longest_common_suffix` next to `longest_common_prefix`.\n- `is_subsequence` and `subsequence_indexes` in the section where `is_sorted` sits.\n\nDo not change any existing function.",
+      "title": "Land stubs, exports, type declarations and docs for subsequence helpers"
+    },
+    {
+      "allowed_paths": [
+        "more_itertools/more.py",
+        "tests/test_more.py"
+      ],
+      "contracts": [
+        "subsequence-helpers-api"
+      ],
+      "depends_on": [
+        "stub-subsequence-api"
+      ],
+      "id": "impl-subsequence",
+      "kind": "feature",
+      "oracle": {
+        "acceptance": "Tests cover the following cases:\n- `is_subsequence` is True for 'ace' in 'abcde' and False for 'aec' in 'abcde'.\n- An empty needle gives True and an empty index list.\n- A non-empty needle against an empty haystack gives False and None.\n- `subsequence_indexes` for 'ace' in 'abcde' gives [0, 2, 4].\n- Repeated needle elements match successive earliest positions.\n- One-shot iterators work as both arguments.\n- The haystack is not consumed beyond the last matched element."
+      },
+      "stub": false,
+      "text": "Replace the stub bodies of `is_subsequence` and `subsequence_indexes` in `more_itertools/more.py`.\n\nBoth functions:\n- Match greedily and leftmost.\n- Consume each argument at most once.\n- Stop consuming the haystack once the needle is exhausted.\n\n`subsequence_indexes` returns the list of haystack positions, or None when there is no match. `is_subsequence` returns a bool without building a list.\n\nAdd unit tests in `tests/test_more.py`.",
+      "title": "Implement is_subsequence and subsequence_indexes"
+    },
+    {
+      "allowed_paths": [
+        "more_itertools/more.py",
+        "tests/test_more.py"
+      ],
+      "contracts": [
+        "subsequence-helpers-api"
+      ],
+      "depends_on": [
+        "stub-subsequence-api"
+      ],
+      "id": "impl-common-suffix",
+      "kind": "feature",
+      "oracle": {
+        "acceptance": "Tests cover the following cases:\n- Inputs 'abcd', 'xbcd' and 'bcd' yield b, c, d.\n- Inputs with no shared tail yield nothing.\n- A single input yields all of its elements.\n- An empty collection of inputs yields nothing.\n- Iterator inputs and a generator of inputs work.\n- Lists of integers work.\n- The return value is an iterator."
+      },
+      "stub": false,
+      "text": "Replace the stub body of `longest_common_suffix` in `more_itertools/more.py`. Materialise each input, compute the longest shared trailing run, and return an iterator over it in front-to-back order.\n\nHandle these cases:\n- No iterables: the result is empty.\n- One iterable: the result yields all of its elements.\n- No common suffix: the result is empty.\n\nAdd unit tests in `tests/test_more.py`.",
+      "title": "Implement longest_common_suffix"
+    },
+    {
+      "allowed_paths": [
+        "tests/test_more.py"
+      ],
+      "contracts": [
+        "subsequence-helpers-api"
+      ],
+      "depends_on": [
+        "impl-subsequence",
+        "impl-common-suffix"
+      ],
+      "id": "property-tests-subsequence",
+      "kind": "test-gap",
+      "oracle": {
+        "acceptance": "New tests run hundreds of seeded random cases and all pass against the implementations. They verify the agreement and consistency properties described in the task text, using only the standard library."
+      },
+      "stub": false,
+      "text": "Add deterministic, seeded randomized tests to `tests/test_more.py` that exercise the new helpers over many short random strings drawn from a small alphabet.\n\nCheck these properties:\n- `is_subsequence` agrees with whether `subsequence_indexes` returns a non-None value.\n- `is_subsequence` agrees with a brute-force reference.\n- A non-None index list is strictly increasing and selects exactly the needle's elements.\n- `longest_common_suffix` agrees with the reversed output of `longest_common_prefix` over the reversed inputs.",
+      "title": "Property tests for subsequence helpers"
+    }
+  ],
+  "title": "Subsequence helpers",
+  "waves": [
+    [
+      "stub-subsequence-api"
+    ],
+    [
+      "impl-subsequence",
+      "impl-common-suffix"
+    ],
+    [
+      "property-tests-subsequence"
+    ]
+  ]
+}
