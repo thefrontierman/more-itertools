@@ -6,10 +6,10 @@ from decimal import Decimal
 from fractions import Fraction
 from typing import (
     Any,
-    Callable,
     TypeVar,
     overload,
 )
+from collections.abc import Callable
 
 __all__ = [
     'Stats',
