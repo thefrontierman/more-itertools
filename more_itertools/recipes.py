@@ -816,14 +816,13 @@ def sliding_window(iterable, n):
     """
     if n > 20:
         return _sliding_window_deque(iterable, n)
-    elif n > 2:
+    if n > 2:
         return _sliding_window_islice(iterable, n)
-    elif n == 2:
+    if n == 2:
         return pairwise(iterable)
-    elif n == 1:
+    if n == 1:
         return zip(iterable)
-    else:
-        raise ValueError(f'n should be at least one, not {n}')
+    raise ValueError(f'n should be at least one, not {n}')
 
 
 def subslices(iterable):
