@@ -232,8 +232,8 @@ def all_equal(iterable, key=None):
 
     """
     iterator = groupby(iterable, key)
-    for first in iterator:
-        for second in iterator:
+    for _ in iterator:
+        for _ in iterator:
             return False
         return True
     return True
@@ -1265,8 +1265,9 @@ def is_prime(n):
     if not (n & 1 and n % 3 and n % 5 and n % 7 and n % 11 and n % 13):
         return False
 
-    for limit, bases in _perfect_tests:
+    for limit, _bases in _perfect_tests:
         if n < limit:
+            bases = _bases
             break
     else:
         bases = (_private_randrange(2, n - 1) for i in range(64))
