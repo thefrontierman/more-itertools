@@ -16,7 +16,6 @@ from contextlib import AbstractContextManager
 from threading import Lock
 from typing import (
     Any,
-    Callable,
     Generic,
     Literal,
     Protocol,
@@ -26,6 +25,7 @@ from typing import (
     overload,
     type_check_only,
 )
+from collections.abc import Callable
 from _typeshed import (
     SupportsDunderLT,
     SupportsGetItem,
