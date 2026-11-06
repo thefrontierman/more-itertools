@@ -2326,7 +2326,7 @@ class numeric_range(Sequence):
 
     """
 
-    _EMPTY_HASH = hash(range(0, 0))
+    _EMPTY_HASH = hash(range(0))
 
     def __init__(self, *args):
         argc = len(args)
