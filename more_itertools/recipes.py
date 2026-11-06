@@ -383,7 +383,7 @@ def grouper(iterable, n, incomplete='fill', fillvalue=None):
         case 'strict':
             return zip(*iterators, strict=True)
         case 'ignore':
-            return zip(*iterators)
+            return zip(*iterators, strict=False)
         case _:
             raise ValueError('Expected fill, strict, or ignore')
 
@@ -781,7 +781,7 @@ def triplewise(iterable):
     next(t3, None)
     next(t3, None)
     next(t2, None)
-    return zip(t1, t2, t3)
+    return zip(t1, t2, t3, strict=False)
 
 
 def _sliding_window_islice(iterable, n):
@@ -789,7 +789,7 @@ def _sliding_window_islice(iterable, n):
     iterators = tee(iterable, n)
     for i, iterator in enumerate(iterators):
         next(islice(iterator, i, i), None)
-    return zip(*iterators)
+    return zip(*iterators, strict=False)
 
 
 def _sliding_window_deque(iterable, n):
