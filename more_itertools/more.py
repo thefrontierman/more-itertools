@@ -990,7 +990,7 @@ def intersperse(e, iterable, n=1):
     """
     if n == 0:
         raise ValueError('n must be > 0')
-    elif n == 1:
+    if n == 1:
         # interleave(repeat(e), iterable) -> e, x_0, e, x_1, e, x_2...
         # islice(..., 1, None) -> x_0, e, x_1, e, x_2...
         return islice(interleave(repeat(e), iterable), 1, None)
@@ -4045,7 +4045,7 @@ def sample(iterable, k, weights=None, *, counts=None, strict=False):
     if weights is not None and counts is not None:
         raise TypeError('weights and counts are mutually exclusive')
 
-    elif weights is not None:
+    if weights is not None:
         weights = iter(weights)
         return _sample_weighted(iterator, k, weights, strict)
 
